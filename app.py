@@ -132,58 +132,8 @@ def index():
     if request.method == "POST":
         gender = request.form.get("gender")
         style = request.form.get("style")
-        print(gender, style)
+        tl_i, tr_i, bl_i, br_i = 0, 0, 0, 0
 
-        col_selector = f"{gender}_{style}_pos"
-        # col_selector = f"female_sport_pos"
-
-        tl_i = 0
-        tl_item = df.loc[df[col_selector] == "top_left"].iloc[[tl_i]]
-        tl_url = tl_item.photo_url.iloc[0]
-
-        tr_i = 0
-        tr_item = df.loc[df[col_selector] == "top_right"].iloc[[tr_i]]
-        tr_url = tr_item.photo_url.iloc[0]
-
-        bl_i = 0
-        bl_item = df.loc[df[col_selector] == "bottom_left"].iloc[[bl_i]]
-        bl_url = bl_item.photo_url.iloc[0]
-
-        br_i = 0
-        br_item = df.loc[df[col_selector] == "bottom_right"].iloc[[br_i]]
-        br_url = br_item.photo_url.iloc[0]
-
-        look_table = pd.concat([tl_item, tr_item, bl_item, br_item]).reset_index(
-            drop=True
-        )
-        look_table["style"] = f"{gender}_{style}"
-        columns_view = [
-            "item_title",
-            "brand",
-            "color_base_title",
-            "offer_price",
-            "item_code",
-        ]
-        # look_table = tabulate(look_table[columns_view], headers="keys", tablefmt="html")
-        look_table = look_table[columns_view].to_html()
-
-        category_tree = f"{style_tree(df_cats_view, f'{gender}_{style}')}Базовые цвета: {', '.join(style_json[gender][style]['color'])}"
-
-        return render_template(
-            "index.html",
-            gender=gender,
-            style=style,
-            tl_url=tl_url,
-            tl_i=tl_i,
-            tr_url=tr_url,
-            tr_i=tr_i,
-            bl_url=bl_url,
-            bl_i=bl_i,
-            br_url=br_url,
-            br_i=br_i,
-            look_table=look_table,
-            category_tree=category_tree,
-        )
     else:
         tl_i = int(request.args.get("tl_i", 0))
         tr_i = int(request.args.get("tr_i", 0))
@@ -191,50 +141,46 @@ def index():
         br_i = int(request.args.get("br_i", 0))
         gender = request.args.get("gender", "female")
         style = request.args.get("style", "sport")
-        print(gender, style)
 
-        col_selector = f"{gender}_{style}_pos"
-        # col_selector = f"female_sport_pos"
+    print(gender, style, tl_i, tr_i, bl_i, br_i)
+    col_selector = f"{gender}_{style}_pos"
 
-        tl_item = df.loc[df[col_selector] == "top_left"].iloc[[tl_i]]
-        tl_url = tl_item.photo_url.iloc[0]
+    tl_item = df.loc[df[col_selector] == "top_left"].iloc[[tl_i]]
+    tl_url = tl_item.photo_url.iloc[0]
 
-        tr_item = df.loc[df[col_selector] == "top_right"].iloc[[tr_i]]
-        tr_url = tr_item.photo_url.iloc[0]
+    tr_item = df.loc[df[col_selector] == "top_right"].iloc[[tr_i]]
+    tr_url = tr_item.photo_url.iloc[0]
 
-        bl_item = df.loc[df[col_selector] == "bottom_left"].iloc[[bl_i]]
-        bl_url = bl_item.photo_url.iloc[0]
+    bl_item = df.loc[df[col_selector] == "bottom_left"].iloc[[bl_i]]
+    bl_url = bl_item.photo_url.iloc[0]
 
-        br_item = df.loc[df[col_selector] == "bottom_right"].iloc[[br_i]]
-        br_url = br_item.photo_url.iloc[0]
+    br_item = df.loc[df[col_selector] == "bottom_right"].iloc[[br_i]]
+    br_url = br_item.photo_url.iloc[0]
 
-        look_table = pd.concat([tl_item, tr_item, bl_item, br_item]).reset_index(
-            drop=True
-        )
-        look_table["style"] = f"{gender}_{style}"
-        columns_view = [
-            "item_title",
-            "brand",
-            "color_base_title",
-            "offer_price",
-            "item_code",
-        ]
-        # look_table = tabulate(look_table[columns_view], headers="keys", tablefmt="html")
-        look_table = look_table[columns_view].to_html()
-        category_tree = f"{style_tree(df_cats_view, f'{gender}_{style}')}Базовые цвета: {', '.join(style_json[gender][style]['color'])}"
+    look_table = pd.concat([tl_item, tr_item, bl_item, br_item]).reset_index(drop=True)
+    look_table["style"] = f"{gender}_{style}"
+    columns_view = [
+        "item_title",
+        "brand",
+        "color_base_title",
+        "offer_price",
+        "item_code",
+    ]
+    look_table = look_table[columns_view].to_html()
+    category_tree = f"{style_tree(df_cats_view, f'{gender}_{style}')}Базовые цвета: {', '.join(style_json[gender][style]['color'])}"
 
-        return render_template(
-            "index.html",
-            gender=gender,
-            style=style,
-            tl_url=tl_url,
-            tl_i=tl_i,
-            tr_url=tr_url,
-            tr_i=tr_i,
-            bl_url=bl_url,
-            bl_i=bl_i,
-            br_url=br_url,
-            br_i=br_i,
-            look_table=look_table,
-            category_tree=category_tree,
-        )
+    return render_template(
+        "index.html",
+        gender=gender,
+        style=style,
+        tl_url=tl_url,
+        tl_i=tl_i,
+        tr_url=tr_url,
+        tr_i=tr_i,
+        bl_url=bl_url,
+        bl_i=bl_i,
+        br_url=br_url,
+        br_i=br_i,
+        look_table=look_table,
+        category_tree=category_tree,
+    )
