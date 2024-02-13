@@ -162,4 +162,4 @@ cython_debug/
 hidden_data/
 .DS_Store
 .vscode/
-.DS_Store
+del.ipynb

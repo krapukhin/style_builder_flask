@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html>
     <style>
+    body {
+        margin: 0 auto;
+        max-width: 800px;
+    }
+    h1 {
+        font-size: 24px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
     .grid-container {
         display: grid;
         grid-template-columns: auto auto;
         width: 800px;
-        /* Set the desired width */
-        /* margin: 0 auto; Center the container horizontally */
     }
 
     .grid-item {
@@ -16,8 +25,38 @@
 
     .grid-item img {
         width: 200px;
-        /* height: auto; */
     }
+    #save-good {
+        background-color: #89ffc0;
+        font-size: 14px;
+        text-align: center;
+    }
+    #save-bad-tl {
+        background-color: #ff898d;
+        font-size: 12px;
+        text-align: center;
+    }
+    #save-bad-tr {
+        background-color: #ff898d;
+        font-size: 12px;
+        text-align: center;
+    }
+    #save-bad-bl {
+        background-color: #ff898d;
+        font-size: 12px;
+        text-align: center;
+    }
+    #save-bad-br {
+        background-color: #ff898d;
+        font-size: 12px;
+        text-align: center;
+    }
+    .forbackward {
+        background-color: #fcfcfc;
+        font-size: 12px;
+        text-align: center;
+}
+
 </style>
 
     <head>
@@ -68,6 +107,7 @@
     </head>
 
     <body>
+        <br>
         <form action="/" method="POST">
             <label for="gender">Пол:</label>
             <select name="gender" id="gender" onchange="updateStyle()">
@@ -94,9 +134,9 @@
                 {% endif %}
                 {% endif %}
             </select>
-            <input type="submit" value="Submit">
+            <input type="submit" value="Создать образ">
         </form>
-        <br><br>
+        <h1>{{ru_name}}</h1>
         <div class="grid-container">
             <div class="grid-item">
                 <table>
@@ -107,18 +147,24 @@
                         <td>
                             <img src="{{ tr_url }}" alt="Image">
                         </td>
-                        <tr>
-                            <td>
-                                <button
-                                    onclick="previousImage_tl()">Назад</button>
-                                <button onclick="nextImage_tl()">Вперед</button>
-                            </td>
-                            <td>
-                                <button
-                                    onclick="previousImage_tr()">Назад</button>
-                                <button onclick="nextImage_tr()">Вперед</button>
-                            </td>
-                        </tr>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button
+                                onclick="previousImage_tl()"
+                                class="forbackward">Назад</button>
+                            <button onclick="nextImage_tl()"
+                                class="forbackward">Вперед</button>
+                            <button id="save-bad-tl"> Ужас </button>
+                        </td>
+                        <td>
+                            <button
+                                onclick="previousImage_tr()"
+                                class="forbackward">Назад</button>
+                            <button onclick="nextImage_tr()"
+                                class="forbackward">Вперед</button>
+                            <button id="save-bad-tr"> Ужас </button>
+                        </td>
                     </tr>
                     <tr>
                         <td>
@@ -130,22 +176,122 @@
                         <tr>
                             <td>
                                 <button
-                                    onclick="previousImage_bl()">Назад</button>
-                                <button onclick="nextImage_bl()">Вперед</button>
+                                    onclick="previousImage_bl()"
+                                    class="forbackward">Назад</button>
+                                <button onclick="nextImage_bl()"
+                                    class="forbackward">Вперед</button>
+                                <button id="save-bad-bl"> Ужас </button>
                             </td>
                             <td>
                                 <button
-                                    onclick="previousImage_br()">Назад</button>
-                                <button onclick="nextImage_br()">Вперед</button>
+                                    onclick="previousImage_br()"
+                                    class="forbackward">Назад</button>
+                                <button onclick="nextImage_br()"
+                                    class="forbackward">Вперед</button>
+                                <button id="save-bad-br"> Ужас </button>
                             </td>
                         </tr>
                     </tr>
                 </table>
+                <script>
+                function saveBadTL() {
+                    var data = {
+                        table_json: '{{ table_json }}'
+                    };
+                    var jsonData = JSON.stringify(data);
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/save-bad-tl", true);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                            console.log("JSON data saved on the server");
+                            document.getElementById("save-bad-tl").innerText = "Записано!";
+                        }
+                    };
+                    xhr.send(jsonData);
+                }
+                function saveBadTR() {
+                    var data = {
+                        table_json: '{{ table_json }}'
+                    };
+                    var jsonData = JSON.stringify(data);
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/save-bad-tr", true);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                            console.log("JSON data saved on the server");
+                            document.getElementById("save-bad-tr").innerText = "Записано!";
+                        }
+                    };
+                    xhr.send(jsonData);
+                }
+                function saveBadBL() {
+                    var data = {
+                        table_json: '{{ table_json }}'
+                    };
+                    var jsonData = JSON.stringify(data);
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/save-bad-bl", true);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                            console.log("JSON data saved on the server");
+                            document.getElementById("save-bad-bl").innerText = "Записано!";
+                        }
+                    };
+                    xhr.send(jsonData);
+                }
+                function saveBadBR() {
+                    var data = {
+                        table_json: '{{ table_json }}'
+                    };
+                    var jsonData = JSON.stringify(data);
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/save-bad-br", true);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                            console.log("JSON data saved on the server");
+                            document.getElementById("save-bad-br").innerText = "Записано!";
+                        }
+                    };
+                    xhr.send(jsonData);
+                }
+                document.getElementById("save-bad-tl").addEventListener("click", saveBadTL);
+                document.getElementById("save-bad-tr").addEventListener("click", saveBadTR);
+                document.getElementById("save-bad-bl").addEventListener("click", saveBadBL);
+                document.getElementById("save-bad-br").addEventListener("click", saveBadBR);
+            </script>
             </div>
+        </div>
+        <br>
+        <div>
+            <button id="save-good"> Хорошая подборка </button>
+            <script>
+        function saveGoodLook() {
+            var data = {
+                table_json: '{{ table_json }}'
+            };
+            var jsonData = JSON.stringify(data);
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/save-good-look", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log("JSON data saved on the server");
+                    document.getElementById("save-good").innerText = "Ваш отзыв записан!";
+                }
+            };
+            xhr.send(jsonData);
+        }
+        // Attach the saveGoodLook function to the button click event
+        document.getElementById("save-good").addEventListener("click", saveGoodLook);
+    </script>
         </div>
         <h1>Товары образа</h1>
         {{ look_table|safe }}
-        <h1>Параметры стиля</h1>
+        <h1>Параметры стиля {{ru_name}}</h1>
         <pre>{{ category_tree }}</pre>
         <script>
         function previousImage_tl() {

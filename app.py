@@ -1,15 +1,10 @@
-import html
 import json
-from datetime import datetime
 
 import pandas as pd
-import requests
 from anytree import Node, RenderTree
 from flask import Flask, render_template, request
-from flask_wtf import FlaskForm
-from wtforms import SelectField
-from processing import translate_style
-from tabulate import tabulate
+
+from processing import translate_style, shuffle_inside_group
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your-secret-key"
@@ -129,6 +124,7 @@ df_cats_view = build_cats_view(style_json, df_cats)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    global df
     if request.method == "POST":
         gender = request.form.get("gender")
         style = request.form.get("style")
@@ -144,21 +140,27 @@ def index():
 
     print(gender, style, tl_i, tr_i, bl_i, br_i)
     col_selector = f"{gender}_{style}_pos"
+    if request.method == "POST":
+        df_selected = shuffle_inside_group(
+            df.loc[~df[col_selector].isna()], col_selector
+        )
 
-    tl_item = df.loc[df[col_selector] == "top_left"].iloc[[tl_i]]
+    tl_item = df_selected.loc[df_selected[col_selector] == "top_left"].iloc[[tl_i]]
     tl_url = tl_item.photo_url.iloc[0]
 
-    tr_item = df.loc[df[col_selector] == "top_right"].iloc[[tr_i]]
+    tr_item = df_selected.loc[df_selected[col_selector] == "top_right"].iloc[[tr_i]]
     tr_url = tr_item.photo_url.iloc[0]
 
-    bl_item = df.loc[df[col_selector] == "bottom_left"].iloc[[bl_i]]
+    bl_item = df_selected.loc[df_selected[col_selector] == "bottom_left"].iloc[[bl_i]]
     bl_url = bl_item.photo_url.iloc[0]
 
-    br_item = df.loc[df[col_selector] == "bottom_right"].iloc[[br_i]]
+    br_item = df_selected.loc[df_selected[col_selector] == "bottom_right"].iloc[[br_i]]
     br_url = br_item.photo_url.iloc[0]
 
-    look_table = pd.concat([tl_item, tr_item, bl_item, br_item]).reset_index(drop=True)
-    look_table["style"] = f"{gender}_{style}"
+    concat_table = pd.concat([tl_item, tr_item, bl_item, br_item]).reset_index(
+        drop=True
+    )
+    concat_table["style"] = f"{gender}_{style}"
     columns_view = [
         "item_title",
         "brand",
@@ -166,13 +168,28 @@ def index():
         "offer_price",
         "item_code",
     ]
-    look_table = look_table[columns_view].to_html()
+    look_table = (
+        concat_table[columns_view]
+        .rename(
+            columns={
+                "item_title": "Название",
+                "brand": "Бренд",
+                "color_base_title": "Базовый цвет",
+                "offer_price": "Цена",
+                "item_code": "Код товара",
+            }
+        )
+        .to_html()
+    )
+    table_json = concat_table.dropna(axis=1).to_json(orient="records")
+
     category_tree = f"{style_tree(df_cats_view, f'{gender}_{style}')}Базовые цвета: {', '.join(style_json[gender][style]['color'])}"
 
     return render_template(
         "index.html",
         gender=gender,
         style=style,
+        ru_name=translate_style(f"{gender}_{style}"),
         tl_url=tl_url,
         tl_i=tl_i,
         tr_url=tr_url,
@@ -182,5 +199,51 @@ def index():
         br_url=br_url,
         br_i=br_i,
         look_table=look_table,
+        table_json=table_json,
         category_tree=category_tree,
     )
+
+
+@app.route("/save-good-look", methods=["POST"])
+def save_good_look():
+    json_data = request.get_json()
+    json_str = json.dumps(json_data).encode().decode("unicode_escape")
+    with open("./hidden_data/review/looks_good.json", "a") as file:
+        file.write(json_str + "\n")
+    return "JSON data saved on the server"
+
+
+@app.route("/save-bad-tl", methods=["POST"])
+def save_bad_tl():
+    json_data = request.get_json()
+    json_str = json.dumps(json_data).encode().decode("unicode_escape")
+    with open("./hidden_data/review/looks_bad_tl.json", "a+") as file:
+        file.write(json_str + "\n")
+    return "JSON data saved on the server"
+
+
+@app.route("/save-bad-tr", methods=["POST"])
+def save_bad_tr():
+    json_data = request.get_json()
+    json_str = json.dumps(json_data).encode().decode("unicode_escape")
+    with open("./hidden_data/review/looks_bad_tr.json", "a+") as file:
+        file.write(json_str + "\n")
+    return "JSON data saved on the server"
+
+
+@app.route("/save-bad-bl", methods=["POST"])
+def save_bad_bl():
+    json_data = request.get_json()
+    json_str = json.dumps(json_data).encode().decode("unicode_escape")
+    with open("./hidden_data/review/looks_bad_bl.json", "a+") as file:
+        file.write(json_str + "\n")
+    return "JSON data saved on the server"
+
+
+@app.route("/save-bad-br", methods=["POST"])
+def save_bad_br():
+    json_data = request.get_json()
+    json_str = json.dumps(json_data).encode().decode("unicode_escape")
+    with open("./hidden_data/review/looks_bad_br.json", "a+") as file:
+        file.write(json_str + "\n")
+    return "JSON data saved on the server"
