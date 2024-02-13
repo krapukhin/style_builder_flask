@@ -1,307 +1,234 @@
 <!DOCTYPE html>
 <html>
     <style>
-    h1 {
-        font-size: 24px;
+    .grid-container {
+        display: grid;
+        grid-template-columns: auto auto;
+        width: 800px;
+        /* Set the desired width */
+        /* margin: 0 auto; Center the container horizontally */
     }
 
-    h2 {
-        font-size: 18px;
+    .grid-item {
+        text-align: center;
+        font-size: 10px;
     }
 
-    #save-good {
-        background-color: #50C06E;
-        font-size: 14px;
-    }
-
-    #save-bad {
-        background-color: #e14040e1;
-        font-size: 14px;
+    .grid-item img {
+        width: 200px;
+        /* height: auto; */
     }
 </style>
 
     <head>
-        <title>Dropdown List</title>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <title>Flask Web Page</title>
         <script>
-        $(document).ready(function () {
-            $('#gender').change(function () {
-                var selectedGender = $(this).val();
-                if (selectedGender === 'male') {
-                    $('#selection').html(`
-                    <option value="male_sport_id">Спортивный</option>
-                    <option value="male_casual_id">Casual</option>
-                    <option value="male_classic_id">Классический</option>
-                    <option value="male_street_id">Уличный</option>
-                    <option value="male_romantic_id">Романтический</option>
-                    <option value="male_st_style_id">Стрит</option>
-                    <option value="male_grunge_id">Гранж</option>
-                    <option value="male_elegance_id">Элегантный</option>
-                    <option value="male_punk_id">Панк</option>
-                    <option value="male_boho_id">Бохо</option>
-                    `);
-                } else if (selectedGender === 'female') {
-                    $('#selection').html(`
-                    <option value="female_sport_id">Спортивный</option>
-                    <option value="female_classic_no_dress_id">Классический (без платьев)</option>
-                    <option value="female_classic_dress_id">Классический (с платьями)</option>
-                    <option value="female_casual_no_dress_id">Повседневный  (без платьев)</option>
-                    <option value="female_casual_dress_id">Повседневный (с платьями)</option>
-                    <option value="female_romantic_no_dress_id">Романтический  (без платьев)</option>
-                    <option value="female_romantic_dress_id">Романтический (с платьями)</option>
-                    <option value="female_street_id">Уличный</option>
-                    <option value="female_business_id">Бизнес</option>
-                    <option value="female_grunge_id">Гранж</option>
-                    <option value="female_elegance_no_dress_id">Элегантный  (без платьев)</option>
-                    <option value="female_elegance_dress_id">Элегантный (с платьями)</option>
-                    <option value="female_boho_no_dress_id">Бохо (без платьев)</option>
-                    <option value="female_boho_dress_id">Бохо (с платьями)</option>
-                    <option value="female_fashion_street_id">Модный стрит</option>
-                    <option value="female_beach_no_dress_id">Пляжный  (без платьев)</option>
-                    <option value="female_beach_dress_id">Пляжный (с платьями)</option>
-                    <option value="female_vintage_no_dress_id">Винтажный  (без платьев)</option>
-                    <option value="female_vintage_dress_id">Винтажный (с платьями)</option>
-                    <option value="female_eco_no_dress_id">Эко (без платьев)</option>
-                    <option value="female_eco_dress_id">Эко (с платьями)</option>
-                    <option value="female_gothic_no_dress_id">Готический (без платьев)</option>
-                    <option value="female_gothic_dress_id">Готический (с платьями)</option>
-                    <option value="female_ethnic_no_dress_id">Этнический (без платьев)</option>
-                    <option value="female_ethnic_dress_id">Этнический (с платьями)</option>
-                    `);
-                } else {
-                    $('#selection').html('');
+        function updateStyle() {
+            var gender = document.getElementById("gender").value;
+            var style = document.getElementById("style");
+            var selectedOption = style.value;
+
+            style.innerHTML = "";
+
+            if (gender === "male") {
+                var option1 = document.createElement("option");
+                option1.text = "Спортивный";
+                option1.value = "sport";
+                if (selectedOption === "sport") {
+                    option1.selected = true;
                 }
-            });
-        });
+                style.add(option1);
+
+                var option2 = document.createElement("option");
+                option2.text = "Casual";
+                option2.value = "casual";
+                if (selectedOption === "casual") {
+                    option2.selected = true;
+                }
+                style.add(option2);
+            } else if (gender === "female") {
+                var option3 = document.createElement("option");
+                option3.text = "Спортивный";
+                option3.value = "sport";
+                if (selectedOption === "sport") {
+                    option3.selected = true;
+                }
+                style.add(option3);
+
+                var option4 = document.createElement("option");
+                option4.text = "Классический (без платьев)";
+                option4.value = "classic_no_dress";
+                if (selectedOption === "classic_no_dress") {
+                    option4.selected = true;
+                }
+                style.add(option4);
+            }
+        }
     </script>
     </head>
 
     <body>
-        <h1>Выбор стиля</h1>
-        <form method="POST" action="/">
-            {{ form.csrf_token }}
-            {{ form.gender.label }} {{ form.gender(class_="form-control") }}
-            {{ form.selection.label }} {{ form.selection }}
-            <input type="submit" value="Готово">
+        <form action="/" method="POST">
+            <label for="gender">Пол:</label>
+            <select name="gender" id="gender" onchange="updateStyle()">
+                <option value="male" {% if gender=='male' %}selected{% endif
+                    %}>Male</option>
+                <option value="female" {% if gender=='female' %}selected{% endif
+                    %}>Female</option>
+            </select>
+            <br><br>
+            <label for="style">Стиль:</label>
+            <select name="style" id="style">
+                {% if style %}
+                {% if gender == 'male' %}
+                <option value="sport" {% if style=='sport' %}selected{%
+                    endif %}>Спортивный</option>
+                <option value="casual" {% if style=='casual'
+                    %}selected{%
+                    endif %}>Casual</option>
+                {% elif gender == 'female' %}
+                <option value="sport" {% if style=='sport' %}selected{%
+                    endif %}>Спортивный</option>
+                <option value="classic_no_dress" {% if style=='classic_no_dress'
+                    %}selected{%
+                    endif %}>Классический (без платьев)</option>
+                {% endif %}
+                {% endif %}
+            </select>
+            <br><br>
+            <input type="submit" value="Submit">
         </form>
-    </body>
-    <!-- <body>
-    <form action="{{ url_for('index', index1=0, index2=0, index3=0, index4=0, selector=selector) }}" method="get">
-        <button type="submit"><Сброс></button>
-    </form>
-</body> -->
-
-    <head>
-        <title>Images</title>
-    </head>
-
-    <body>
-        <h1>{{ selector_name }} </h1>
-    </body>
-
-    <head>
-        <title>Images</title>
-        <style>
-        body {
-            margin: 0 auto;
-            max-width: 800px;
-        }
-
-        table {
-            border-collapse: collapse;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: auto auto;
-            width: 800px;
-            /* Set the desired width */
-            /* margin: 0 auto; Center the container horizontally */
-        }
-
-        .grid-item {
-            text-align: center;
-            font-size: 10px;
-        }
-
-        .grid-item img {
-            width: 200px;
-            /* height: auto; */
-        }
-    </style>
-    </head>
-
-    <body>
+        <br><br>
         <div class="grid-container">
             <div class="grid-item">
                 <table>
                     <tr>
                         <td>
-                            <img src="{{ image1 }}" alt="Image 1">
+                            <img src="{{ tl_url }}" alt="Image">
                         </td>
                         <td>
-                            <img src="{{ image2 }}" alt="Image 2">
+                            <img src="{{ tr_url }}" alt="Image">
                         </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <form
-                                action="{{ url_for('index', index1=index1-1, index2=index2, index3=index3, index4=index4, selector=selector )}}"
-                                method="get">
-                                <button type="submit">Назад</button>
-                            </form>
-                        </td>
-                        <td>
-                            <form
-                                action="{{ url_for('index', index1=index1, index2=index2-1, index3=index3, index4=index4, selector=selector )}}"
-                                method="get">
-                                <button type="submit">Назад</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <form
-                                action="{{ url_for('index', index1=index1+1, index2=index2, index3=index3, index4=index4, selector=selector )}}"
-                                method="get">
-                                <button type="submit">Вперед</button>
-                            </form>
-                        </td>
-                        <td>
-                            <form
-                                action="{{ url_for('index', index1=index1, index2=index2+1, index3=index3, index4=index4, selector=selector )}}"
-                                method="get">
-                                <button type="submit">Вперед</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <img src="{{ image3 }}" alt="Image 3">
-                        </td>
-                        <td>
-                            <img src="{{ image4 }}" alt="Image 4">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <!-- <form action="{{ url_for('index', index1=index1, index2=index2, index3=index3-1 if index3 > 1 else 0, index4=index4, selector=selector )}}" method="get"> -->
-                            <form
-                                action="{{ url_for('index', index1=index1, index2=index2, index3=index3-1, index4=index4, selector=selector )}}"
-                                method="get">
-                                <button type="submit">Назад</button>
-                            </form>
-                        </td>
-                        <td>
-                            <form
-                                action="{{ url_for('index', index1=index1, index2=index2, index3=index3, index4=index4-1, selector=selector )}}"
-                                method="get">
-                                <button type="submit">Назад</button>
-                            </form>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            <form
-                                action="{{ url_for('index', index1=index1, index2=index2, index3=index3+1, index4=index4, selector=selector )}}"
-                                method="get">
-                                <button type="submit">Вперед</button>
-                            </form>
-                        </td>
-                        <td>
-                            <form
-                                action="{{ url_for('index', index1=index1, index2=index2, index3=index3, index4=index4+1, selector=selector )}}"
-                                method="get">
-                                <button type="submit">Вперед</button>
-                            </form>
+                        <tr>
+                            <td>
+                                <button onclick="previousImage_tl()">Previous
+                                    Image</button>
+                                <button onclick="nextImage_tl()">Next
+                                    Image</button>
+                            </td>
+                            <td>
+                                <button onclick="previousImage_tr()">Previous
+                                    Image</button>
+                                <button onclick="nextImage_tr()">Next
+                                    Image</button>
+                            </td>
                         </tr>
-                    </table>
-                </div>
-
+                    </tr>
+                    <tr>
+                        <td>
+                            <img src="{{ bl_url }}" alt="Image">
+                        </td>
+                        <td>
+                            <img src="{{ br_url }}" alt="Image">
+                        </td>
+                        <tr>
+                            <td>
+                                <button onclick="previousImage_bl()">Previous
+                                    Image</button>
+                                <button onclick="nextImage_bl()">Next
+                                    Image</button>
+                            </td>
+                            <td>
+                                <button onclick="previousImage_br()">Previous
+                                    Image</button>
+                                <button onclick="nextImage_br()">Next
+                                    Image</button>
+                            </td>
+                        </tr>
+                    </tr>
+                </table>
             </div>
-        </body>
-
-        <button id="save-bad"> Плохой образ </button>
+        </div>
         <script>
-    function saveBadLook() {
-        // Get the value of the selector_name from the HTML element
-        //   var selectorName = document.getElementById("selector_name").value;
+        function previousImage_tl() {
+            var gender = document.getElementById("gender").value;
+            var style = document.getElementById("style").value;
+            var tl_i = {{ tl_i - 1 }};
+            var tr_i = {{ tr_i }};
+            var bl_i = {{ bl_i }};
+            var br_i = {{ br_i }};
+        window.location.href = "/?tl_i=" + tl_i + "&tr_i=" + tr_i + "&bl_i=" + bl_i + "&br_i=" + br_i + "&gender=" + gender + "&style=" + style;
+}
 
-        // Create an object to hold the variables
-        var data = {
-            table_json: '{{ table_json }}'
-            // Add more variables as needed
-        };
+        function nextImage_tl() {
+            var gender = document.getElementById("gender").value;
+            var style = document.getElementById("style").value;
+            var tl_i = {{ tl_i + 1}};
+            var tr_i = {{ tr_i }};
+            var bl_i = {{ bl_i }};
+            var br_i = {{ br_i }};
+        window.location.href = "/?tl_i=" + tl_i + "&tr_i=" + tr_i + "&bl_i=" + bl_i + "&br_i=" + br_i + "&gender=" + gender + "&style=" + style;
+}
+        function previousImage_tr() {
+            var gender = document.getElementById("gender").value;
+            var style = document.getElementById("style").value;
+            var tl_i = {{ tl_i }};
+            var tr_i = {{ tr_i-1}};
+            var bl_i = {{ bl_i }};
+            var br_i = {{ br_i }};
+        window.location.href = "/?tl_i=" + tl_i + "&tr_i=" + tr_i + "&bl_i=" + bl_i + "&br_i=" + br_i + "&gender=" + gender + "&style=" + style;
+}
 
-        // Convert the object to JSON
-        var jsonData = JSON.stringify(data);
+        function nextImage_tr() {
+            var gender = document.getElementById("gender").value;
+            var style = document.getElementById("style").value;
+            var tl_i = {{ tl_i }};
+            var tr_i = {{ tr_i+1 }};
+            var bl_i = {{ bl_i }};
+            var br_i = {{ br_i }};
+        window.location.href = "/?tl_i=" + tl_i + "&tr_i=" + tr_i + "&bl_i=" + bl_i + "&br_i=" + br_i + "&gender=" + gender + "&style=" + style;
+}
 
-        // Create an AJAX request to send the JSON data to the server
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/save-bad-look", true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                console.log("JSON data saved on the server");
-                document.getElementById("save-bad").innerText = "Ваш отзыв записан!";
-            }
-        };
-        xhr.send(jsonData);
-    }
 
-    // Attach the saveBadLook function to the button click event
-    document.getElementById("save-bad").addEventListener("click", saveBadLook);
-</script>
+        function previousImage_bl() {
+            var gender = document.getElementById("gender").value;
+            var style = document.getElementById("style").value;
+            var tl_i = {{ tl_i }};
+            var tr_i = {{ tr_i }};
+            var bl_i = {{ bl_i - 1 }};
+            var br_i = {{ br_i }};
+        window.location.href = "/?tl_i=" + tl_i + "&tr_i=" + tr_i + "&bl_i=" + bl_i + "&br_i=" + br_i + "&gender=" + gender + "&style=" + style;
+}
 
-        <button id="save-good"> Хороший образ </button>
-        <script>
-    function saveGoodLook() {
-        // Get the value of the selector_name from the HTML element
-        //   var selectorName = document.getElementById("selector_name").value;
+        function nextImage_bl() {
+            var gender = document.getElementById("gender").value;
+            var style = document.getElementById("style").value;
+            var tl_i = {{ tl_i }};
+            var tr_i = {{ tr_i }};
+            var bl_i = {{ bl_i + 1}};
+            var br_i = {{ br_i }};
+        window.location.href = "/?tl_i=" + tl_i + "&tr_i=" + tr_i + "&bl_i=" + bl_i + "&br_i=" + br_i + "&gender=" + gender + "&style=" + style;
+}
+        function previousImage_br() {
+            var gender = document.getElementById("gender").value;
+            var style = document.getElementById("style").value;
+            var tl_i = {{ tl_i }};
+            var tr_i = {{ tr_i }};
+            var bl_i = {{ bl_i }};
+            var br_i = {{ br_i - 1}};
+        window.location.href = "/?tl_i=" + tl_i + "&tr_i=" + tr_i + "&bl_i=" + bl_i + "&br_i=" + br_i + "&gender=" + gender + "&style=" + style;
+}
 
-        // Create an object to hold the variables
-        var data = {
-            table_json: '{{ table_json }}'
-            // Add more variables as needed
-        };
+        function nextImage_br() {
+            var gender = document.getElementById("gender").value;
+            var style = document.getElementById("style").value;
+            var tl_i = {{ tl_i }};
+            var tr_i = {{ tr_i }};
+            var bl_i = {{ bl_i }};
+            var br_i = {{ br_i + 1}};
+        window.location.href = "/?tl_i=" + tl_i + "&tr_i=" + tr_i + "&bl_i=" + bl_i + "&br_i=" + br_i + "&gender=" + gender + "&style=" + style;
+}
+    </script>
+    </body>
 
-        // Convert the object to JSON
-        var jsonData = JSON.stringify(data);
-
-        // Create an AJAX request to send the JSON data to the server
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/save-good-look", true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                console.log("JSON data saved on the server");
-                document.getElementById("save-good").innerText = "Ваш отзыв записан!";
-            }
-        };
-        xhr.send(jsonData);
-    }
-
-    // Attach the saveGoodLook function to the button click event
-    document.getElementById("save-good").addEventListener("click", saveGoodLook);
-</script>
-
-        <head>
-            <title>Pandas DataFrame</title>
-        </head>
-
-        <body>
-            <h2>Товары образа</h2>
-            {{ table|safe }}
-        </body>
-
-        <body>
-            <h2>Параметры стиля"{{ selector_name }}":</h2>
-            <pre>{{ category_tree }}</pre>
-        </body>
-        <footer>
-            <p><a href="https://telegram.me/krapukhin">Telegram: @krapukhin
-                </a></p>
-        </footer>
-
-    </html>
+</html>
