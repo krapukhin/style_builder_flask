@@ -72,11 +72,10 @@
             <label for="gender">Пол:</label>
             <select name="gender" id="gender" onchange="updateStyle()">
                 <option value="male" {% if gender=='male' %}selected{% endif
-                    %}>Male</option>
+                    %}>Мужской</option>
                 <option value="female" {% if gender=='female' %}selected{% endif
-                    %}>Female</option>
+                    %}>Женский</option>
             </select>
-            <br><br>
             <label for="style">Стиль:</label>
             <select name="style" id="style">
                 {% if style %}
@@ -95,7 +94,6 @@
                 {% endif %}
                 {% endif %}
             </select>
-            <br><br>
             <input type="submit" value="Submit">
         </form>
         <br><br>
@@ -111,16 +109,14 @@
                         </td>
                         <tr>
                             <td>
-                                <button onclick="previousImage_tl()">Previous
-                                    Image</button>
-                                <button onclick="nextImage_tl()">Next
-                                    Image</button>
+                                <button
+                                    onclick="previousImage_tl()">Назад</button>
+                                <button onclick="nextImage_tl()">Вперед</button>
                             </td>
                             <td>
-                                <button onclick="previousImage_tr()">Previous
-                                    Image</button>
-                                <button onclick="nextImage_tr()">Next
-                                    Image</button>
+                                <button
+                                    onclick="previousImage_tr()">Назад</button>
+                                <button onclick="nextImage_tr()">Вперед</button>
                             </td>
                         </tr>
                     </tr>
@@ -133,22 +129,24 @@
                         </td>
                         <tr>
                             <td>
-                                <button onclick="previousImage_bl()">Previous
-                                    Image</button>
-                                <button onclick="nextImage_bl()">Next
-                                    Image</button>
+                                <button
+                                    onclick="previousImage_bl()">Назад</button>
+                                <button onclick="nextImage_bl()">Вперед</button>
                             </td>
                             <td>
-                                <button onclick="previousImage_br()">Previous
-                                    Image</button>
-                                <button onclick="nextImage_br()">Next
-                                    Image</button>
+                                <button
+                                    onclick="previousImage_br()">Назад</button>
+                                <button onclick="nextImage_br()">Вперед</button>
                             </td>
                         </tr>
                     </tr>
                 </table>
             </div>
         </div>
+        <h1>Товары образа</h1>
+        {{ look_table|safe }}
+        <h1>Параметры стиля</h1>
+        <pre>{{ category_tree }}</pre>
         <script>
         function previousImage_tl() {
             var gender = document.getElementById("gender").value;
@@ -230,5 +228,4 @@
 }
     </script>
     </body>
-
 </html>

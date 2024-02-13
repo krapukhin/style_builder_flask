@@ -160,3 +160,6 @@ cython_debug/
 #.idea/
 
 hidden_data/
+.DS_Store
+.vscode/
+.DS_Store
