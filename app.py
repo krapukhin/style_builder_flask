@@ -10,11 +10,11 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "your-secret-key"
 reflector = "female_classic_no_dress"
 
-df = pd.read_pickle("./hidden_data/output_clean_3.pkl")
+df = pd.read_pickle("./hidden_data/output_clean_4.pkl")
 df_cats = pd.read_pickle("./hidden_data/df_cats.pkl")
 
 
-with open("./hidden_data/style_list_240126.json", "r") as file:
+with open("./hidden_data/style_list_240214.json", "r") as file:
     style_json = json.load(file)
 
 
@@ -120,11 +120,13 @@ def build_cats_view(style_json, df_cats):
 
 
 df_cats_view = build_cats_view(style_json, df_cats)
+df_selected = df.copy()
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     global df
+    global df_selected
     if request.method == "POST":
         gender = request.form.get("gender")
         style = request.form.get("style")
@@ -161,12 +163,14 @@ def index():
         drop=True
     )
     concat_table["style"] = f"{gender}_{style}"
+    print(concat_table.columns)
     columns_view = [
         "item_title",
         "brand",
         "color_base_title",
         "offer_price",
         "item_code",
+        "category_4",
     ]
     look_table = (
         concat_table[columns_view]
@@ -177,6 +181,7 @@ def index():
                 "color_base_title": "Базовый цвет",
                 "offer_price": "Цена",
                 "item_code": "Код товара",
+                "category_4": "Категория",
             }
         )
         .to_html()
