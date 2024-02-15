@@ -163,7 +163,6 @@ def index():
         drop=True
     )
     concat_table["style"] = f"{gender}_{style}"
-    print(concat_table.columns)
     columns_view = [
         "item_title",
         "brand",
@@ -188,7 +187,10 @@ def index():
     )
     table_json = concat_table.dropna(axis=1).to_json(orient="records")
 
-    category_tree = f"{style_tree(df_cats_view, f'{gender}_{style}')}Базовые цвета: {', '.join(style_json[gender][style]['color'])}"
+    style_colors = "Базовые цвета:\n\t\t" + ",\n\t\t".join(
+        style_json[gender][style]["color"]
+    )
+    category_tree = style_tree(df_cats_view, f"{gender}_{style}")
 
     return render_template(
         "index.html",
@@ -206,6 +208,7 @@ def index():
         look_table=look_table,
         table_json=table_json,
         category_tree=category_tree,
+        style_colors=style_colors,
     )
 
 

@@ -55,8 +55,17 @@
         background-color: #fcfcfc;
         font-size: 12px;
         text-align: center;
-}
-
+    }
+    #myTable {
+        border-collapse: collapse;
+    }
+    #myTable th, #myTable td {
+        border: 1px solid black;
+        padding: 8px;
+    }
+    #rightCell {
+        text-align: center;
+    }
 </style>
 
     <head>
@@ -79,28 +88,108 @@
                 style.add(option1);
 
                 var option2 = document.createElement("option");
-                option2.text = "Casual";
+                option2.text = "Повседневный";
                 option2.value = "casual";
                 if (selectedOption === "casual") {
                     option2.selected = true;
                 }
                 style.add(option2);
-            } else if (gender === "female") {
+
                 var option3 = document.createElement("option");
-                option3.text = "Спортивный";
-                option3.value = "sport";
-                if (selectedOption === "sport") {
+                option3.text = "Классический";
+                option3.value = "classic";
+                if (selectedOption === "classic") {
                     option3.selected = true;
                 }
                 style.add(option3);
 
                 var option4 = document.createElement("option");
-                option4.text = "Классический (без платьев)";
-                option4.value = "classic_no_dress";
-                if (selectedOption === "classic_no_dress") {
+                option4.text = "Уличный";
+                option4.value = "streetwear";
+                if (selectedOption === "streetwear") {
                     option4.selected = true;
                 }
                 style.add(option4);
+            } else if (gender === "female") {
+                var option5 = document.createElement("option");
+                option5.text = "Спортивный";
+                option5.value = "sport";
+                if (selectedOption === "sport") {
+                    option5.selected = true;
+                }
+                style.add(option5);
+
+                var option6 = document.createElement("option");
+                option6.text = "Классический (без платьев)";
+                option6.value = "classic_no_dress";
+                if (selectedOption === "classic_no_dress") {
+                    option6.selected = true;
+                }
+                style.add(option6);
+
+                var option7 = document.createElement("option");
+                option7.text = "Классический (с платьями)";
+                option7.value = "classic_dress";
+                if (selectedOption === "classic_dress") {
+                    option7.selected = true;
+                }
+                style.add(option7);
+
+                var option8 = document.createElement("option");
+                option8.text = "Повседневный (с платьями)";
+                option8.value = "casual_dress";
+                if (selectedOption === "casual_dress") {
+                    option8.selected = true;
+                }
+                style.add(option8);
+
+                var option9 = document.createElement("option");
+                option9.text = "Повседневный (без платьев)";
+                option9.value = "casual_no_dress";
+                if (selectedOption === "casual_no_dress") {
+                    option9.selected = true;
+                }
+                style.add(option9);
+
+                var option10 = document.createElement("option");
+                option10.text = "Уличный";
+                option10.value = "streetwear";
+                if (selectedOption === "streetwear") {
+                    option10.selected = true;
+                }
+                style.add(option10);
+
+                var option11 = document.createElement("option");
+                option11.text = "Пляжный";
+                option11.value = "resort";
+                if (selectedOption === "resort") {
+                    option11.selected = true;
+                }
+                style.add(option11);
+
+                var option12 = document.createElement("option");
+                option12.text = "Авангардный";
+                option12.value = "avantgarde";
+                if (selectedOption === "avantgarde") {
+                    option12.selected = true;
+                }
+                style.add(option12);
+
+                var option13 = document.createElement("option");
+                option13.text = "Бохо";
+                option13.value = "boho";
+                if (selectedOption === "boho") {
+                    option13.selected = true;
+                }
+                style.add(option13);
+
+                var option14 = document.createElement("option");
+                option14.text = "Sustainable";
+                option14.value = "sustainable";
+                if (selectedOption === "sustainable") {
+                    option14.selected = true;
+                }
+                style.add(option14);
             }
         }
     </script>
@@ -120,17 +209,47 @@
             <select name="style" id="style">
                 {% if style %}
                 {% if gender == 'male' %}
+                <option value="classic" {% if style=='classic'
+                    %}selected{%
+                    endif %}>Классический</option>
                 <option value="sport" {% if style=='sport' %}selected{%
                     endif %}>Спортивный</option>
                 <option value="casual" {% if style=='casual'
                     %}selected{%
-                    endif %}>Casual</option>
+                    endif %}>Повседневный</option>
+                <option value="streetwear" {% if style=='streetwear'
+                    %}selected{%
+                    endif %}>Уличный</option>
                 {% elif gender == 'female' %}
-                <option value="sport" {% if style=='sport' %}selected{%
-                    endif %}>Спортивный</option>
+                <option value="classic_dress" {% if style=='classic_dress'
+                    %}selected{%
+                    endif %}>Классический (с платьями)</option>
                 <option value="classic_no_dress" {% if style=='classic_no_dress'
                     %}selected{%
                     endif %}>Классический (без платьев)</option>
+                <option value="casual_dress" {% if style=='casual_dress'
+                    %}selected{%
+                    endif %}>Повседневный (с платьями)</option>
+                <option value="casual_no_dress" {% if style=='casual_no_dress'
+                    %}selected{%
+                    endif %}>Повседневный (без платьев)</option>
+                <option value="streetwear" {% if style=='streetwear'
+                    %}selected{%
+                    endif %}>Уличный</option>
+                <option value="resort" {% if style=='resort'
+                    %}selected{%
+                    endif %}>Пляжный</option>
+                <option value="avantgarde" {% if style=='avantgarde'
+                    %}selected{%
+                    endif %}>Авангардный</option>
+                <option value="boho" {% if style=='boho'
+                    %}selected{%
+                    endif %}>Бохо</option>
+                <option value="sustainable" {% if style=='sustainable'
+                    %}selected{%
+                    endif %}>Sustainable</option>
+                <option value="sport" {% if style=='sport' %}selected{%
+                    endif %}>Спортивный</option>
                 {% endif %}
                 {% endif %}
             </select>
@@ -374,4 +493,14 @@
 }
     </script>
     </body>
+    <table id="myTable">
+        <tr>
+            <td>
+                <pre>{{ category_tree }}</pre>
+            </td>
+            <td id="rightCell">
+                <pre>{{ style_colors }}</pre>
+            </td>
+        </tr>
+    </table>
 </html>
