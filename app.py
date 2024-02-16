@@ -4,7 +4,7 @@ import pandas as pd
 from anytree import Node, RenderTree
 from flask import Flask, render_template, request
 
-from processing import translate_style, shuffle_inside_group
+from processing import translate_style
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your-secret-key"
@@ -120,17 +120,32 @@ def build_cats_view(style_json, df_cats):
 
 
 df_cats_view = build_cats_view(style_json, df_cats)
-df_selected = df.copy()
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     global df
-    global df_selected
     if request.method == "POST":
         gender = request.form.get("gender")
         style = request.form.get("style")
         tl_i, tr_i, bl_i, br_i = 0, 0, 0, 0
+        col_selector = f"{gender}_{style}_pos"
+        df_merge = []
+        for col in [x for x in df.columns if x.endswith("_pos")]:
+            if col == col_selector:
+                df_mini = (
+                    df.groupby(col, as_index=False, group_keys=False)
+                    .apply(lambda x: x.sample(frac=1))
+                    .reset_index(drop=True)
+                )
+            else:
+                df_mini = (
+                    df.groupby(col, as_index=False, group_keys=False)
+                    .apply(lambda x: x)
+                    .reset_index(drop=True)
+                )
+            df_merge += [df_mini]
+        df = pd.concat(df_merge).reset_index(drop=True)
 
     else:
         tl_i = int(request.args.get("tl_i", 0))
@@ -139,14 +154,11 @@ def index():
         br_i = int(request.args.get("br_i", 0))
         gender = request.args.get("gender", "female")
         style = request.args.get("style", "sport")
+        col_selector = f"{gender}_{style}_pos"
 
     print(gender, style, tl_i, tr_i, bl_i, br_i)
-    col_selector = f"{gender}_{style}_pos"
-    if request.method == "POST":
-        df_selected = shuffle_inside_group(
-            df.loc[~df[col_selector].isna()], col_selector
-        )
 
+    df_selected = df.copy()
     tl_item = df_selected.loc[df_selected[col_selector] == "top_left"].iloc[[tl_i]]
     tl_url = tl_item.photo_url.iloc[0]
 
