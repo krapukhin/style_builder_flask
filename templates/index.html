@@ -2,8 +2,11 @@
 <html>
     <style>
     body {
-        margin: 0 auto;
-        max-width: 800px;
+        /* margin: 0 auto;
+        max-width: 550px; */
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
     }
     h1 {
         font-size: 24px;
@@ -13,16 +16,20 @@
         font-size: 18px;
     }
     .grid-container {
-        display: grid;
+        /* display: grid;
         grid-template-columns: auto auto;
-        width: 800px;
+        width: 800px; */
     }
 
     .grid-item {
-        text-align: center;
+        /* text-align: center; */
         font-size: 10px;
     }
-
+    table {
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+    }
     .grid-item img {
         width: 200px;
     }
@@ -56,15 +63,14 @@
         font-size: 12px;
         text-align: center;
     }
-    #myTable {
+    #styleSettings {
         border-collapse: collapse;
     }
-    #myTable th, #myTable td {
+    #styleSettings th, #styleSettings td {
         border: 1px solid black;
-        padding: 8px;
-    }
-    #rightCell {
-        text-align: center;
+        padding: 4px;
+        text-align: left;
+        vertical-align: top;
     }
 </style>
 
@@ -258,7 +264,7 @@
         <h1>{{ru_name}}</h1>
         <div class="grid-container">
             <div class="grid-item">
-                <table>
+                <table id="tableLook">
                     <tr>
                         <td>
                             <img src="{{ tl_url }}" alt="Image">
@@ -411,7 +417,6 @@
         <h1>Товары образа</h1>
         {{ look_table|safe }}
         <h1>Параметры стиля {{ru_name}}</h1>
-        <pre>{{ category_tree }}</pre>
         <script>
         function previousImage_tl() {
             var gender = document.getElementById("gender").value;
@@ -493,12 +498,12 @@
 }
     </script>
     </body>
-    <table id="myTable">
+    <table id="styleSettings">
         <tr>
             <td>
                 <pre>{{ category_tree }}</pre>
             </td>
-            <td id="rightCell">
+            <td>
                 <pre>{{ style_colors }}</pre>
             </td>
         </tr>
