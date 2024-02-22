@@ -163,3 +163,6 @@ hidden_data/
 .DS_Store
 .vscode/
 del.ipynb
+look_creator.ipynb
+look_creator_demo.ipynb
+analysis.ipynb
