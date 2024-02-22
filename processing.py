@@ -69,7 +69,10 @@ def json_log_to_df(path, variable_name="table_json"):
 
 def update_data_VPN():
     """Turn-on VPN to get data (~40 seconds)"""
-    AS_engine = create_engine(f"")
+    with open("hidden_data/credentials/db_connection.txt", "r") as file:
+        db_connection = file.read()
+
+    AS_engine = create_engine(db_connection)
 
     assortment = pd.read_sql("""select * from analytics.v$assortment""", AS_engine)
     assortment.to_pickle("hidden_data/assortment.pkl")
@@ -139,14 +142,14 @@ def processing(assortment, df_cats):
         .rename(columns={"index": "color_base_id"})
     )
 
-    brand_styling = pd.read_csv("data/brand_styling_ChatGPT.csv").rename(
+    brand_styling = pd.read_csv("hidden_data/brand_styling_ChatGPT.csv").rename(
         columns={
             "brand": "brand_name",
             "style": "brand_style",
             "pricing": "brand_pricing",
         }
     )
-    brand_styling_from_guide = pd.read_excel("data/styling_guide_brands.xlsx")
+    brand_styling_from_guide = pd.read_excel("hidden_data/styling_guide_brands.xlsx")
     brand_styling_from_guide["isPriority"].fillna(0, inplace=True)
     brand_styling_from_guide["isFashion"].fillna(0, inplace=True)
     brand_styling_from_guide["Name"] = brand_styling_from_guide["Name"].apply(
@@ -331,7 +334,14 @@ def get_item_img_url(df, debug=False):
 
 
 def score_items(
-    df_all, cats, col_name, size=None, L_clr=None, L_style=None, L_price=None
+    df_all,
+    cats,
+    col_name,
+    size=None,
+    L_brands=None,
+    L_clr=None,
+    L_style=None,
+    L_price=None,
 ):
     top_df = df_all.copy()
     top_df[col_name] = 0
@@ -341,7 +351,9 @@ def score_items(
         top_df.loc[top_df.ru_size.isin(size), col_name] += 1
     if not L_clr:
         L_clr = list(df_all.color_base_title.unique())
-    top_df.loc[top_df.color_base_title.isin(L_clr), col_name] += 10
+    top_df.loc[top_df.color_base_title.isin(L_clr), col_name] += 100
+    if L_brands:
+        top_df.loc[top_df.brand.isin(L_brands), col_name] += 10
     if L_style:
         top_df.loc[top_df.brand_style == L_style, col_name] += 1
     if L_price:
@@ -350,11 +362,40 @@ def score_items(
     return top_df
 
 
+def get_brands_styles(gender, style, brands_styles_dict):
+    """Returns brands for selected style (or None)
+
+    Args:
+        gender (str): 'male' or 'female'
+        style (str): name of style from style_json
+        brands_styles_dict (dict): dict from wtf.excel
+
+    Returns:
+        list: list of brands or None
+    """
+    brand_styles_g = brands_styles_dict.get(gender)
+    if brand_styles_g:
+        brand_styles_gs = brand_styles_g.get(style)
+        if brand_styles_gs:
+            L_brands = brand_styles_gs
+        else:
+            L_brands = None
+    else:
+        L_brands = None
+    return L_brands
+
+
 def get_image_url(item_url):
-    response = requests.get(item_url)
+    response = requests.get(
+        item_url,
+        headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+        },
+    )
     if response.status_code == 200:
         html_content = response.text
-        pattern = r"(https://preowned-cdn\.tsum\.com/sig/[a-f0-9]{32}/height/1526/document-hub/[a-zA-Z0-9]+\.(jpg|jpeg|png|gif))"
+        # pattern = r"(https://preowned-cdn\.tsum\.com/sig/[a-f0-9]{32}/height/1526/document-hub/[a-zA-Z0-9]+\.(jpg|jpeg|png|gif))"
+        pattern = r"(https:\/\/[a-zA-Z0-9\/-]+\.tsum\.com\/[a-zA-Z0-9\/_-]+\.(jpg|jpeg|png|gif))"
         matches = re.findall(pattern, html_content)
         return matches[0][0]
     else:
@@ -554,9 +595,7 @@ def look_id(df, new_name):
     return output[output.columns[1:].to_list() + output.columns[:1].to_list()]
 
 
-def df_equalizer(
-    df_list, mode="multiplier"
-):  # [pd.DataFrame({'col1': [1, 2, 3]}), pd.DataFrame({'col1': [2, 3,3, 4]}),pd.DataFrame({'col1': [3, 4, 5,6,7]})]
+def df_equalizer(df_list, mode="multiplier"):
     if mode == "multiplier":
         n_rows = max([x.shape[0] for x in df_list])
     elif mode == "cutter":
@@ -573,153 +612,23 @@ def df_equalizer(
     return output_list
 
 
-# unused
-# import random
-
-# ########## setup
-# L_gender = "female"  # random.choice(["female", "male"])
-# L_clothing_size = (
-#     None  # random.choice([str(x) for x in clothing_sizes[L_gender].keys()])
-# )
-# L_clothing_size_RU = None  # clothing_sizes[L_gender][L_clothing_size]
-# L_shoe_size = None  # random.choice([x for x in shoe_sizes[L_gender].keys()])
-# L_shoe_size_RU = None  # shoe_sizes[L_gender][L_shoe_size]
-# # L_clr = random.choice(list(df_clean.color_base_title))
-# L_clr = list(
-#     df_full.color_base_title.unique()
-# )  # color_match[random.choice(list(color_match.keys())[:3])]
-# L_style = None  # random.choice(list(df_clean.brand_style.dropna()))
-# L_price = None  # random.choice(list(df_clean.brand_pricing.dropna()))
-# ################
-
-# print(
-#     f"""Gender: {L_gender}
-# Clothes size: {L_clothing_size} {L_clothing_size_RU}
-# Shoe size: {L_shoe_size} {L_shoe_size_RU}
-# Color: {L_clr}
-# Style: {L_style}
-# Price: {L_price}
-# """
-# )
-
-# color_match = {
-#     "bw": [
-#         "Белый",
-#         "Чёрно-белый",
-#         "Чёрный",
-#         "Прозрачный",  # черный
-#     ],
-#     "brown": [
-#         "Коричневый",
-#         "Синий",
-#     ],
-#     "neutral": [
-#         "Бежевый",
-#         "Кремовый",
-#         "Перламутровый",
-#         "Хаки",  # todo убрать из нейтральных?
-#     ],
-#     "silver": [
-#         "Серый",  # todo убрать? цвет не очень металик
-#         "Белое золото",
-#         "Белое и жёлтое золото",
-#         "Серебряный",
-#         "Розовое и жёлтое золото",  # серебро или золото
-#         "Чернёное серебро с позолотой",
-#     ],
-#     "bronze": [
-#         "Бронзовый",
-#         "Розовое золото",
-#     ],
-#     "gold": [
-#         "Жёлтое золото",
-#         "Жёлтое и частично чернёное белое золото",
-#         "Золотой",
-#     ],
-#     "leopard": [
-#         "Леопардовый",
-#     ],
-#     "bright": [
-#         "Бордовый",
-#         "Красный",
-#         "Оранжевый",
-#         "Жёлтый",
-#         "Зелёный",
-#         "Голубой",
-#         "Фиолетовый",
-#         "Сиреневый",
-#         "Розовый",
-#         "Разноцветный",
-#     ],
-#     "zero_items": [
-#         "Бесцветный",  # 0 товаров
-#         "Платина",  # 0 товаров
-#         "Белое золото и жёлтое золото",  # 0 товаров
-#         "Розовое золото и чернёное белое золото",  # 0 товаров
-#         "Розовое и белое золото",  # 0 товаров
-#         "Чернёное белое золото",  # 0 товаров
-#     ],
-# }
-
-
-# cats = {
-#     "male": {
-#         "top_cats": [
-#             "CAT-155",  #'Мужское/Одежда/Верхняя одежда'
-#             "CAT-171",  #'Мужское/Одежда/Пиджаки'
-#             "CAT-176",  #'Мужское/Одежда/Рубашки'
-#             "CAT-180",  #'Мужское/Одежда/Свитеры и Кардиганы'
-#             "CAT-186",  #'Мужское/Одежда/Свитшоты и Толстовки'
-#             "CAT-199",  #'Мужское/Одежда/Футболки и Майки'
-#         ],
-#         "bottom_cats": [
-#             "CAT-149",  #'Мужское/Одежда/Брюки'
-#             "CAT-164",  #'Мужское/Одежда/Джинсы'
-#         ],
-#         "shoes_cats": [
-#             "CAT-209",  #'Мужское/Обувь/Классическая обувь'
-#             "CAT-215",  #'Мужское/Обувь/Летняя обувь'
-#             "CAT-220",  #'Мужское/Обувь/Повседневная обувь'
-#             "CAT-227",  #'Мужское/Обувь/Ботинки и Полусапоги'
-#             "CAT-205",  #'Мужское/Обувь/Кеды и Кроссовки'
-#         ],
-#     },
-#     "female": {
-#         "top_cats": [
-#             "CAT-12",  # 'Женское/Одежда/Блузы и Рубашки'
-#             "CAT-21",  # 'Женское/Одежда/Верхняя одежда'
-#             "CAT-50",  # 'Женское/Одежда/Свитеры и Кардиганы'
-#             "CAT-56",  # 'Женское/Одежда/Свитшоты и Толстовки'
-#             "CAT-66",  # 'Женское/Одежда/Футболки и Топы'
-#         ],
-#         "bottom_cats": [
-#             "CAT-15",  # 'Женское/Одежда/Брюки'
-#             "CAT-32",  # 'Женское/Одежда/Джинсы'
-#             "CAT-77",  # 'Женское/Одежда/Юбки'
-#         ],
-#         "shoes_cats": [
-#             "CAT-102",  # 'Женское/Обувь/Без каблука'
-#             "CAT-109",  # 'Женское/Обувь/Босоножки'
-#             "CAT-128",  # 'Женское/Обувь/Ботинки и Ботильоны'
-#             "CAT-98",  # 'Женское/Обувь/Кеды и Кроссовки'
-#             "CAT-112",  # 'Женское/Обувь/Мюли и Сабо'
-#             "CAT-115",  # 'Женское/Обувь/Сапоги'
-#             "CAT-120",  # 'Женское/Обувь/Туфли'
-#         ],
-#     },
-#     "unused": [
-#         "CAT-224",  #'Мужское/Обувь/Домашняя обувь'
-#         "CAT-141",  #'Мужское/Одежда/Белье и Домашняя одежда'
-#         "CAT-167",  #'Мужское/Одежда/Костюмы'
-#         "CAT-196",  #'Мужское/Одежда/Пляжные принадлежности'
-#         "CAT-190",  #'Мужское/Одежда/Спортивная одежда'
-#         "CAT-154",  #'Мужское/Одежда/Шорты'
-#         "CAT-125",  # 'Женское/Обувь/Домашняя обувь'
-#         "CAT-40",  # 'Женское/Одежда/Платья'
-#         "CAT-3",  # 'Женское/Одежда/Белье и Домашняя одежда'
-#         "CAT-45",  # 'Женское/Одежда/Пляжная одежда'
-#         "CAT-36",  # 'Женское/Одежда/Жакеты и Костюмы'
-#         "CAT-60",  # 'Женское/Одежда/Спортивная одежда'
-#         "CAT-74",  # 'Женское/Одежда/Шорты'
-#     ],
-# }
+def unused_cats(df_big, style_list):
+    cat_list = []
+    for gender in style_list:
+        for style in style_list[gender]:
+            for cat in style_list[gender][style]:
+                if cat != "color":
+                    cat_list += style_list[gender][style][cat]
+    used_cats = set(cat_list)
+    unused_cats = set(df_big.category_4_code.unique()) - set(cat_list)
+    print(
+        f"Количество используемых категорий:\t{len(used_cats)}\n"
+        f"Количество неиспользуемых категорий:\t{len(unused_cats)}"
+    )
+    cols = ["category_1", "category_2", "category_3", "category_4", "category_4_code"]
+    cats_not_in_look = (
+        df_big[cols]
+        .drop_duplicates(subset=["category_4_code", "category_4"])
+        .loc[df_big.category_4_code.isin(unused_cats)]
+    )
+    return cats_not_in_look.sort_values(cols)

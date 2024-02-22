@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "your-secret-key"
 reflector = "female_classic_no_dress"
 
-df = pd.read_pickle("./hidden_data/output_clean_4.pkl")
+df = pd.read_pickle("./hidden_data/output_clean_240221.pkl")
 df_cats = pd.read_pickle("./hidden_data/df_cats.pkl")
 
 
